@@ -12,19 +12,25 @@
     $resultats = $stmt->fetchAll();
 
     // Creation d'un nouveau chauffeur
-    if(isset($_POST['create'])) {
-        $typeDePermis = $_POST['typePermis'];
-        
+    if(isset($_POST['create'])) {   
+        $statut = -1;
+        if($_POST['statut'] == 'on')
+            $statut = 1;
+        else
+            $statut = 0; 
+        var_dump($statut);
         $sql = "INSERT INTO transexpressbase (nom, prenom, telephone, typePermis, matricule, statut) 
-        VALUES (:nom, :prenom, :telephone, '$typeDePermis', :matricule, :statut)";
+        VALUES (:nom, :prenom, :telephone, :typePermis, :matricule, :statut)";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':nom', $_POST['nom']);
         $stmt->bindParam(':prenom', $_POST['prenom']);
         $stmt->bindParam(':telephone', $_POST['telephone']);
-        $stmt->bindParam(':typePermis', $typeDePermis);
+        $stmt->bindParam(':typePermis', $_POST['typePermis']);
         $stmt->bindParam(':matricule', $_POST['matricule']);
-        $stmt->bindParam(':statut', $_POST['statut'], PDO::PARAM_INT);
+        $stmt->bindParam(':statut', $statut, PDO::PARAM_INT);
         $stmt->execute();
+        header("Location: ./");
+
     }
 
     // Lecture d'un chauffeur existant
@@ -117,15 +123,14 @@
         <label for="typePermis">Type de permis</label>
         <select name="typePermis" >
             <option value="">--Please choose an option--</option>
-            <option value="permisB">Permis B</option>
-            <option value="permisC">Permis C</option>
-            <option value="permisCE">Permis CE</option>
+            <option value="B">Permis B</option>
+            <option value="C">Permis C</option>
+            <option value="CE">Permis CE</option>
         </select><br>
         <label for="matricule">Matricule</label>
         <input type="number" name="matricule" id="matricule"><br>
         <label for="statut">Statut Actif ?</label>
-        <input type="checkbox" name="statut" id="statut">Oui
-        <input type="checkbox" name="statut" id="statut">Non <br><br>
+        <input type="checkbox" name="statut" id="statut"><br><br>
 
         <button type="submit" name="create">Créer</button>
     </form>
@@ -141,14 +146,13 @@
       <input type="text" name="telephone" value="<?php echo $result['telephone'] ?? '' ; ?>"> <br><br>
       <label for="typePermis">Type de permis</label>
       <select name="typePermis" >
-            <option value=""><?php echo $result['matricule'] ?? '' ; ?></option>
-            <option value="typepermis">Permis B</option>
-            <option value="typepermis">Permis C</option>
-            <option value="typepermis">Permis CE</option>
+            <option value=""><?php echo $result['typePermis'] ?? '' ; ?></option>
+            <option value="B">Permis B</option>
+            <option value="C">Permis C</option>
+            <option value="CE">Permis CE</option>
         </select><br>
       <label for="statut">Statut Actif ?</label>
-      <input type="checkbox" name="statut" id="statut">Oui
-      <input type="checkbox" name="statut" id="statut">Non <br><br>
+      <input type="checkbox" name="statut" id="statut"> <br><br>
       <button type="submit" name="update">Mettre à jour</button>
     </form>
 </body>
