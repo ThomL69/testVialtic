@@ -46,16 +46,15 @@ font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans
 label {
     display: inline-block;
     width: 100px;
-	 margin-right: 20px;
-	 vertical-align: top;
-	 text-align: right;
+    margin-right: 20px;
+    vertical-align: top;
+    text-align: right;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif ;
     padding: 5px;
 }
 
 table {
-    margin-left:auto;
-    margin-right:auto;
+    table-layout: auto;
     font-size: 14px;
 }
 
@@ -72,7 +71,9 @@ tfoot {
 th, td {
   border: 1px solid rgb(160 160 160);
   padding: 8px 10px;
+  
 }
+
 
 #Elements:hover {
     border: 1px solid rgb(160 160 160);

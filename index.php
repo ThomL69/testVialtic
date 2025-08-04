@@ -5,11 +5,39 @@
     $db = getDB();
 
 
-    // Lecture de tous les chauffeurs
-    $sql = "SELECT * FROM transexpressbase";
+    // Lecture de tous les chauffeurs (avec une pagination)
+    $limit = 5;
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $start = ($page - 1) * $limit;
+    $sql = "SELECT * FROM transexpressbase LIMIT $start, $limit";
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $resultats = $stmt->fetchAll();
+    
+    //gestion de la pagination
+    $sql = "SELECT count(nom) as nom FROM transexpressbase";
+    $total = $db->prepare($sql);
+    $total->execute();
+    $previous = $page - 1;
+    $next = $page + 1;
+
+    $count = $total->fetchColumn();
+    $total_pages = ceil($count / $limit);
+    var_dump($count);
+    var_dump($total_pages);
+
+    
+    if($page < $total_pages) {
+      $next = $page - 1;
+    } else {
+      $next = $total_pages;
+    }
+
+    $init = 0;
+    foreach($stmt as $stmt)
+    {
+      $init++;
+    }
 
     // Creation d'un nouveau chauffeur
     if(isset($_POST['create'])) {   
@@ -18,7 +46,6 @@
             $statut = 1;
         else
             $statut = 0; 
-        var_dump($statut);
         $sql = "INSERT INTO transexpressbase (nom, prenom, telephone, typePermis, matricule, statut) 
         VALUES (:nom, :prenom, :telephone, :typePermis, :matricule, :statut)";
         $stmt = $db->prepare($sql);
@@ -71,23 +98,27 @@
 <head>
   <meta charset="utf-8">
   <title>TransExpress CRUD</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/script.js"></script>
 </head>
 <body>
-    <h1>Listing des chauffeurs</h1>
+    <h1 class="text-center">Listing des chauffeurs</h1>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>matricule</th>
-          <th>téléphone</th>
-          <th>type de permis</th>
+    <table >
+      <thead  scope="col-md-4">
+        <tr >
+          <th >Nom</th>
+          <th >Prénom</th>
+          <th >Matricule</th>
+          <th >Téléphone</th>
+          <th >Type de permis</th>
+          <th >Statut</th>
+          <th >Actions</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="align-middle">
         <?php foreach($resultats as $resultat): ?>
           <tr id="Elements">
             <td><?= $resultat['nom']; ?></td>
@@ -95,7 +126,7 @@
             <td><?= $resultat['matricule']; ?></td>
             <td><?= $resultat['telephone']; ?></td>
             <td><?= $resultat['typePermis']; ?></td>
-            <td><?php echo ($resultat['statut'] == 0) ? "inactif" : "actif"; ?></td>
+            <td ><?php echo ($resultat['statut'] == 0) ? "inactif" : "actif"; ?></td>
             <td>
               <form method="POST">
                 <input type="hidden" name="matricule" value="<?= $resultat['matricule'] ?? ''; ?>">
@@ -109,13 +140,32 @@
       </tbody>
     </table>
 
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li class="page-item ">
+          <a class="page-link" href="index.php?page=<?= $previous?>" tabindex="-1">Précédent</a>
+        </li>
+<?php
+for($i=1; $i <= $total_pages; $i++) : ?>
+        <li  class="page-item"><a class="page-link" href="index.php?page=<?= $i?>"><?= $i ?></a></li>
+        <!-- <li  class="page-item"><a class="page-link" href="#">2</a></li>
+        <li  class="page-item"><a class="page-link" href="#">3</a></li> -->
+<?php endfor?>
+        <li class="page-item active">
+          <a class="page-link" href="index.php?page=<?= $next?>">Suivant</a>
+        </li>
+      </ul>
+
+    </nav>
+
     <br><br>
 
-    <h1>Ajout d'un chauffeur</h1>
+    <h1 class="text-center">Ajout d'un chauffeur</h1>
     
-    <form method="POST">
+    <form method="POST" class="text-center" >
         <label for="nom">Nom</label>
-        <input type="text" name="nom" id="nom"> <br>
+        <input type="text" name="nom" id="nom"> 
+        <br>
         <label for="prenom">Prénom</label>
         <input type="text" name="prenom" id="prenom"> <br>
         <label for="telephone">Téléphone</label>
@@ -129,15 +179,15 @@
         </select><br>
         <label for="matricule">Matricule</label>
         <input type="number" name="matricule" id="matricule"><br>
-        <label for="statut">Statut Actif ?</label>
-        <input type="checkbox" name="statut" id="statut"><br><br>
+        <label for="statut" class="form-check-label">Statut Actif ?</label>
+        <input type="checkbox" name="statut" id="statut" class="form-check-input"><br><br>
 
         <button type="submit" name="create">Créer</button>
     </form>
 
     <br><br>
-    <h2>Mise à jour d'un chauffeur existant</h2>
-    <form method="POST">
+    <h2 class="text-center">Mise à jour d'un chauffeur existant</h2>
+    <form method="POST" class="text-center">
       <label>Nom:</label>
       <input type="text" name="title" value="<?php echo $result['nom'] ?? '' ; ?>"> <br>
       <label>Prenom:</label>
@@ -155,5 +205,8 @@
       <input type="checkbox" name="statut" id="statut"> <br><br>
       <button type="submit" name="update">Mettre à jour</button>
     </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
