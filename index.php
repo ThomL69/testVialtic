@@ -1,64 +1,34 @@
 <?php
     require_once('./conf/configuration.php');
     require_once('./connexion.php');
+    require_once('./requetes.php');
 
-    $db = getDB();
-
-
+    $db = getDB()
+;
     // Lecture de tous les chauffeurs (avec une pagination)
     $limit = 5;
     $page = isset($_GET['page']) ? $_GET['page'] : 1;
     $start = ($page - 1) * $limit;
-    $sql = "SELECT * FROM transexpressbase LIMIT $start, $limit";
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $resultats = $stmt->fetchAll();
+    $resultats = readAllDriver($start, $limit);
+
     
     //gestion de la pagination
-    $sql = "SELECT count(nom) as nom FROM transexpressbase";
-    $total = $db->prepare($sql);
-    $total->execute();
+    $total_pages = pagination($limit);
     $previous = $page - 1;
+    if($previous == 0)
+      $previous = $page;
+
     $next = $page + 1;
-
-    $count = $total->fetchColumn();
-    $total_pages = ceil($count / $limit);
-    var_dump($count);
-    var_dump($total_pages);
-
     
     if($page < $total_pages) {
-      $next = $page - 1;
+      $next = $page + 1;
     } else {
       $next = $total_pages;
     }
 
-    $init = 0;
-    foreach($stmt as $stmt)
-    {
-      $init++;
-    }
-
     // Creation d'un nouveau chauffeur
-    if(isset($_POST['create'])) {   
-        $statut = -1;
-        if($_POST['statut'] == 'on')
-            $statut = 1;
-        else
-            $statut = 0; 
-        $sql = "INSERT INTO transexpressbase (nom, prenom, telephone, typePermis, matricule, statut) 
-        VALUES (:nom, :prenom, :telephone, :typePermis, :matricule, :statut)";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':nom', $_POST['nom']);
-        $stmt->bindParam(':prenom', $_POST['prenom']);
-        $stmt->bindParam(':telephone', $_POST['telephone']);
-        $stmt->bindParam(':typePermis', $_POST['typePermis']);
-        $stmt->bindParam(':matricule', $_POST['matricule']);
-        $stmt->bindParam(':statut', $statut, PDO::PARAM_INT);
-        $stmt->execute();
-        header("Location: ./");
+    createDriver();
 
-    }
 
     // Lecture d'un chauffeur existant
     if(isset($_POST['selected'])) {
@@ -69,19 +39,10 @@
         $result = $stmt->fetch();
     }
 
+
+
     // Mettre à jour les informations d'un chauffeur existant
-    if(isset($_POST['update'])) {
-        $sql = "UPDATE transexpressbase SET nom = :nom, prenom=:prenom, telephone=:telephone, typePermis=:typePermis, statut=:statut WHERE matricule=:matricule";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':nom', $_POST['nom']);
-        $stmt->bindParam(':prenom', $_POST['prenom']);
-        $stmt->bindParam(':telephone', $_POST['telephone']);
-        $stmt->bindParam(':typePermis', $_POST['typePermis']);
-        $stmt->bindParam(':matricule', $_POST['matricule']);
-        $stmt->bindParam(':statut', $_POST['statut'], PDO::PARAM_INT);
-        $stmt->execute();
-        header("Location: ./");
-    }
+    updateDriver();
 
     // Suppression d'un chauffeur existant
     if(isset($_POST['delete'])) {         
@@ -104,9 +65,22 @@
   <script src="./js/script.js"></script>
 </head>
 <body>
-    <h1 class="text-center">Listing des chauffeurs</h1>
 
-    <table >
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 mt-4">
+        <?php if(isset($_SESSION['message'])) : ?>
+          <h5 class="alert alert-success"><?= $_SESSION['message']; ?></h5>
+          <?php 
+            unset($_SESSION['message']);
+            endif
+            ?>
+      </div>
+    </div>
+  </div>
+    <h1 class="text-center">Listing des chauffeurs</h1>
+    <br>
+    <table align="center">
       <thead  scope="col-md-4">
         <tr >
           <th >Nom</th>
@@ -139,18 +113,18 @@
           
       </tbody>
     </table>
-
-    <nav aria-label="...">
+    <br>
+    <nav class="nav justify-content-center">
       <ul class="pagination">
         <li class="page-item ">
           <a class="page-link" href="index.php?page=<?= $previous?>" tabindex="-1">Précédent</a>
         </li>
-<?php
-for($i=1; $i <= $total_pages; $i++) : ?>
-        <li  class="page-item"><a class="page-link" href="index.php?page=<?= $i?>"><?= $i ?></a></li>
-        <!-- <li  class="page-item"><a class="page-link" href="#">2</a></li>
-        <li  class="page-item"><a class="page-link" href="#">3</a></li> -->
-<?php endfor?>
+    <?php
+    for($i=1; $i <= $total_pages; $i++) : ?>
+            <li  class="page-item"><a class="page-link" href="index.php?page=<?= $i?>"><?= $i ?></a></li>
+            <!-- <li  class="page-item"><a class="page-link" href="#">2</a></li>
+            <li  class="page-item"><a class="page-link" href="#">3</a></li> -->
+    <?php endfor?>
         <li class="page-item active">
           <a class="page-link" href="index.php?page=<?= $next?>">Suivant</a>
         </li>
@@ -194,7 +168,7 @@ for($i=1; $i <= $total_pages; $i++) : ?>
       <input type="text" name="description" value="<?php echo $result['prenom'] ?? '' ; ?>"> <br>
       <label>Téléphone:</label>
       <input type="text" name="telephone" value="<?php echo $result['telephone'] ?? '' ; ?>"> <br><br>
-      <label for="typePermis">Type de permis</label>
+      <!-- <label for="typePermis">Type de permis</label>
       <select name="typePermis" >
             <option value=""><?php echo $result['typePermis'] ?? '' ; ?></option>
             <option value="B">Permis B</option>
@@ -202,7 +176,19 @@ for($i=1; $i <= $total_pages; $i++) : ?>
             <option value="CE">Permis CE</option>
         </select><br>
       <label for="statut">Statut Actif ?</label>
-      <input type="checkbox" name="statut" id="statut"> <br><br>
+      <input type="checkbox" name="statut" id="statut" class="form-check-input"
+      <?php #if($result['statut'] == 1) {echo "checked ='checked'" ;}  ?>> -->
+      <br><br>
+
+      <?php 
+        // if(isset($_POST['statut'])) {
+        //   echo '<input type="checkbox" name="statut" id="statut" checked><br><br>';
+        // }
+        // else {
+        //   echo '<input type="checkbox" name="statut" id="statut"><br><br>';
+        // }
+      ?>
+      
       <button type="submit" name="update">Mettre à jour</button>
     </form>
 

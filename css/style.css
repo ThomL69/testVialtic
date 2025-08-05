@@ -74,6 +74,13 @@ th, td {
   
 }
 
+/* nav {
+ display: block;
+ margin: auto;
+ width: 100%;
+ text-align: center;
+} */
+
 
 #Elements:hover {
     border: 1px solid rgb(160 160 160);
