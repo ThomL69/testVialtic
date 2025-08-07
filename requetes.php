@@ -30,10 +30,10 @@
         return $total_pages;
     }
 
+    // Creation d'un nouveau chauffeur
     function createDriver() {
         global $db;
 
-        // Creation d'un nouveau chauffeur
         if(isset($_POST['create'])) {
             $statut = -1;
             if($_POST['statut'] == 'on')
@@ -42,6 +42,7 @@
                 $statut = 0;    
             $sql = "INSERT INTO transexpressbase (nom, prenom, telephone, typePermis, matricule, statut) 
             VALUES (:nom, :prenom, :telephone, :typePermis, :matricule, :statut)";
+            
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':nom', $_POST['nom']);
             $stmt->bindParam(':prenom', $_POST['prenom']);
@@ -58,38 +59,48 @@
             }
         }
     }
-    // function updateDriver($nom, $prenom, $tel, $typeP, $matri, $statut) {
+
     function updateDriver() {
-        if(isset($_POST['update'])) {
-            $nom = $_POST['nom'];
+        $nom = $_POST['nom'];
             $prenom = $_POST['prenom'];
             $tel = $_POST['telephone'];
+            $typeP = $_POST['typePermis'];
+            $matri = $_POST['matricule'];
+            $statut = $_POST['statut'];
 
-            // $result = editDriver($nom, $prenom, $tel, $typeP, $matri, $statut);
-            $result = editDriver($nom, $prenom, $tel);
-            if($result) {
-                $_SESSION['message'] = "Updated Successfuly";
-                header("Location: ./");
-            } else {
-                $_SESSION['message'] = "Not Updated";
-            }
-        } else {
-            echo 'error';
-        }
+            if($statut == 'on')
+                $statut = 1;
+            else
+                $statut = 0; 
+
+            editDriver($nom, $prenom, $tel, $typeP, $matri, $statut);
     }
 
-    // function editDriver($nom, $prenom, $tel, $typeP, $matri, $statut) {
-    function editDriver($nom, $prenom, $tel) {
+    // fait la mise a jour d'une ligne de donnees
+    function editDriver($nom, $prenom, $tel, $typeP, $matri, $statut) {
         global $db;
+        
         try {
-            // $sql = "UPDATE transexpressbase SET nom = :nom, prenom=:prenom, telephone=:telephone, typePermis=:typePermis, statut=:statut, matricule=:matricule WHERE matricule=:matricule";
-            $sql = "UPDATE transexpressbase SET nom = :nom, prenom=:prenom, telephone=:telephone WHERE matricule=:matricule";
+            $sql = "UPDATE transexpressbase SET nom=:nom, prenom=:prenom, telephone=:telephone, typePermis=:typePermis, matricule=:matricule, statut=:statut WHERE matricule=:matricule";
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':nom', $nom);
             $stmt->bindParam(':prenom', $prenom);
             $stmt->bindParam(':telephone', $tel);
-            $stmt->execute();
-            return true;
+            $stmt->bindParam(':typePermis', $typeP);
+            $stmt->bindParam(':matricule', $matri);
+            
+            $stmt->bindParam(':statut', $statut, PDO::PARAM_INT);
+            $result = $stmt->execute();
+
+            if($result) {
+                $_SESSION['message'] = "Updated Successfuly";
+                header("Location: ./index.php?page=".$_GET['page']."");
+                exit(0);
+            } else {
+                $_SESSION['message'] = "Not Updated";
+                header("Location: ./index.php?page=".$_GET['page']."");
+                exit(0);
+            }
         } catch (PDOException $e) { 
             echo $e->getMessage();
         }

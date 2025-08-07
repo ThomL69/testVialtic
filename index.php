@@ -11,7 +11,6 @@
     $start = ($page - 1) * $limit;
     $resultats = readAllDriver($start, $limit);
 
-    
     //gestion de la pagination
     $total_pages = pagination($limit);
     $previous = $page - 1;
@@ -42,7 +41,8 @@
 
 
     // Mettre à jour les informations d'un chauffeur existant
-    updateDriver();
+    if(isset($_POST['update']))
+      updateDriver();
 
     // Suppression d'un chauffeur existant
     if(isset($_POST['delete'])) {         
@@ -134,7 +134,7 @@
 
     <br><br>
 
-    <h1 class="text-center">Ajout d'un chauffeur</h1>
+    <!-- <h1 class="text-center">Ajout d'un chauffeur</h1>
     
     <form method="POST" class="text-center" >
         <label for="nom">Nom</label>
@@ -157,37 +157,46 @@
         <input type="checkbox" name="statut" id="statut" class="form-check-input"><br><br>
 
         <button type="submit" name="create">Créer</button>
-    </form>
+    </form> -->
 
     <br><br>
     <h2 class="text-center">Mise à jour d'un chauffeur existant</h2>
     <form method="POST" class="text-center">
       <label>Nom:</label>
-      <input type="text" name="title" value="<?php echo $result['nom'] ?? '' ; ?>"> <br>
+      <input type="text" name="nom" value="<?php echo $result['nom'] ?? ''; ?>"> <br>
       <label>Prenom:</label>
-      <input type="text" name="description" value="<?php echo $result['prenom'] ?? '' ; ?>"> <br>
+      <input type="text" name="prenom" value="<?php echo $result['prenom'] ?? ''; ?>"> <br>
       <label>Téléphone:</label>
-      <input type="text" name="telephone" value="<?php echo $result['telephone'] ?? '' ; ?>"> <br><br>
-      <!-- <label for="typePermis">Type de permis</label>
+      <input type="text" name="telephone" value="<?php echo $result['telephone'] ?? ''; ?>"> <br><br>
+      <label for="matricule">Matricule:</label>
+      <input type="text" name="matricule" value="<?php echo $result['matricule'] ?? ''; ?>"> <br><br>
+      <label for="typePermis">Type de permis</label>
       <select name="typePermis" >
-            <option value=""><?php echo $result['typePermis'] ?? '' ; ?></option>
+            <option value=""><?php echo $result['typePermis'] ?? ''; ?></option>
             <option value="B">Permis B</option>
             <option value="C">Permis C</option>
             <option value="CE">Permis CE</option>
         </select><br>
       <label for="statut">Statut Actif ?</label>
       <input type="checkbox" name="statut" id="statut" class="form-check-input"
-      <?php #if($result['statut'] == 1) {echo "checked ='checked'" ;}  ?>> -->
-      <br><br>
+      <?php 
+        if(isset($result['statut'])) {
+          {if($result['statut'] == 1) { echo "checked ='checked'"; } else { echo ''; }}   
+        }
+      ?>>
 
       <?php 
-        // if(isset($_POST['statut'])) {
-        //   echo '<input type="checkbox" name="statut" id="statut" checked><br><br>';
-        // }
-        // else {
-        //   echo '<input type="checkbox" name="statut" id="statut"><br><br>';
-        // }
+      // if(isset($result['statut'])) {
+      //   echo $result['statut'];
+      //   if($result['statut'] == 1) {
+      //     echo '<input type="checkbox" name="statut" id="statut" checked><br><br>';
+      //   }
+      //   else {
+      //     echo '<input type="checkbox" name="statut" id="statut"><br><br>';
+      //   }
+      // }
       ?>
+      <br>
       
       <button type="submit" name="update">Mettre à jour</button>
     </form>
