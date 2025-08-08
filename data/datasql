@@ -5,6 +5,7 @@ INSERT INTO transexpressbase VALUES (4, 'Leboeuf', 'Franck', '0698751565', 'C', 
 INSERT INTO transexpressbase VALUES (5, 'Joli', 'Valérie', '0611253648', 'B', 5, TRUE);
 INSERT INTO transexpressbase VALUES (6, 'Beauchard', 'Benjamin', '0645621536', 'CE', 654, TRUE);
 INSERT INTO transexpressbase VALUES (7, 'Button', 'Benjamin', '0645265136', 'C', 545, TRUE);
+INSERT INTO transexpressbase VALUES (9, 'Test4', 'Test4', '04040404', 'B', 444, TRUE);
 
 
 -- supprimer un element du tableau

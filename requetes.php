@@ -89,7 +89,6 @@
             $stmt->bindParam(':telephone', $tel);
             $stmt->bindParam(':typePermis', $typeP);
             $stmt->bindParam(':matricule', $matri);
-
             $stmt->bindParam(':statut', $statut, PDO::PARAM_INT);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
@@ -108,6 +107,5 @@
             echo $e->getMessage();
         }
     }
-
 
 ?>

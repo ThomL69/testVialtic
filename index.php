@@ -44,15 +44,6 @@
     if(isset($_POST['update']))
       updateDriver();
 
-    // Suppression d'un chauffeur existant
-    if(isset($_POST['delete'])) {         
-    $sql = "DELETE FROM transexpressbase WHERE id=:id";
-    $stmt = $db->prepare($sql);
-    $stmt->bindParam(':id', $_POST['id']);
-    $stmt->execute();
-    header("Location: ./");
-  }
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -104,12 +95,17 @@
             <td>
               <form method="POST">
                 <input type="hidden" name="id" value="<?= $resultat['id'] ?? ''; ?>">
-                <button type="submit" name="selected">Mettre à jour</button>
-                <button type="submit" name="delete">Supprimer</button>
+                <button type="submit" class="btn btn-primary" name="selected">Mettre à jour</button>
+                <a href="./delete.php?id=<?= $resultat['id'] ?>" onclick="return confirm('Etes vous sur de vouloir supprimer le chauffeur <?= $resultat['prenom'] .' '. $resultat['nom']  ?> ?');">
+                  <button class="btn btn-secondary" type="button" > Supprimer </button>
+                </a>
               </form>
             </td>
           </tr>
+          
           <?php endforeach; ?>
+
+          
           
       </tbody>
     </table>
