@@ -62,34 +62,37 @@
 
     function updateDriver() {
         $nom = $_POST['nom'];
-            $prenom = $_POST['prenom'];
-            $tel = $_POST['telephone'];
-            $typeP = $_POST['typePermis'];
-            $matri = $_POST['matricule'];
-            $statut = $_POST['statut'];
+        $prenom = $_POST['prenom'];
+        $tel = $_POST['telephone'];
+        $typeP = $_POST['typePermis'];
+        $matri = $_POST['matricule'];
+        $statut = $_POST['statut'];
+        $id= $_POST['id'];
 
             if($statut == 'on')
                 $statut = 1;
             else
                 $statut = 0; 
 
-            editDriver($nom, $prenom, $tel, $typeP, $matri, $statut);
+            editDriver($id, $nom, $prenom, $tel, $typeP, $matri, $statut);
     }
 
     // fait la mise a jour d'une ligne de donnees
-    function editDriver($nom, $prenom, $tel, $typeP, $matri, $statut) {
+    function editDriver($id, $nom, $prenom, $tel, $typeP, $matri, $statut) {
         global $db;
         
         try {
-            $sql = "UPDATE transexpressbase SET nom=:nom, prenom=:prenom, telephone=:telephone, typePermis=:typePermis, matricule=:matricule, statut=:statut WHERE matricule=:matricule";
+            $sql = "UPDATE transexpressbase SET nom=:nom, prenom=:prenom, telephone=:telephone, typePermis=:typePermis, matricule=:matricule, statut=:statut WHERE id=:id";
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':nom', $nom);
             $stmt->bindParam(':prenom', $prenom);
             $stmt->bindParam(':telephone', $tel);
             $stmt->bindParam(':typePermis', $typeP);
             $stmt->bindParam(':matricule', $matri);
-            
+
             $stmt->bindParam(':statut', $statut, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
             $result = $stmt->execute();
 
             if($result) {

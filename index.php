@@ -31,11 +31,11 @@
 
     // Lecture d'un chauffeur existant
     if(isset($_POST['selected'])) {
-        $sql = "SELECT * FROM transexpressbase WHERE matricule=:matricule";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':matricule', $_POST['matricule']);
-        $stmt->execute();
-        $result = $stmt->fetch();
+      $sql = "SELECT * FROM transexpressbase WHERE id=:id";
+      $stmt = $db->prepare($sql);
+      $stmt->bindParam(':id', $_POST['id']);
+      $stmt->execute();
+      $result = $stmt->fetch();
     }
 
 
@@ -46,9 +46,9 @@
 
     // Suppression d'un chauffeur existant
     if(isset($_POST['delete'])) {         
-    $sql = "DELETE FROM transexpressbase WHERE matricule = :matricule";
+    $sql = "DELETE FROM transexpressbase WHERE id=:id";
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':matricule', $_POST['matricule']);
+    $stmt->bindParam(':id', $_POST['id']);
     $stmt->execute();
     header("Location: ./");
   }
@@ -103,7 +103,7 @@
             <td ><?php echo ($resultat['statut'] == 0) ? "inactif" : "actif"; ?></td>
             <td>
               <form method="POST">
-                <input type="hidden" name="matricule" value="<?= $resultat['matricule'] ?? ''; ?>">
+                <input type="hidden" name="id" value="<?= $resultat['id'] ?? ''; ?>">
                 <button type="submit" name="selected">Mettre à jour</button>
                 <button type="submit" name="delete">Supprimer</button>
               </form>
@@ -160,8 +160,10 @@
     </form> -->
 
     <br><br>
-    <h2 class="text-center">Mise à jour d'un chauffeur existant</h2>
+    <!-- <h2 class="text-center">Mise à jour d'un chauffeur existant</h2>
     <form method="POST" class="text-center">
+      <?php var_dump($result['id'] ?? ''); ?>
+      <input type="hidden" name="id" value="<?php echo $result['id'] ?? ''; ?>" />
       <label>Nom:</label>
       <input type="text" name="nom" value="<?php echo $result['nom'] ?? ''; ?>"> <br>
       <label>Prenom:</label>
@@ -183,23 +185,10 @@
         if(isset($result['statut'])) {
           {if($result['statut'] == 1) { echo "checked ='checked'"; } else { echo ''; }}   
         }
-      ?>>
-
-      <?php 
-      // if(isset($result['statut'])) {
-      //   echo $result['statut'];
-      //   if($result['statut'] == 1) {
-      //     echo '<input type="checkbox" name="statut" id="statut" checked><br><br>';
-      //   }
-      //   else {
-      //     echo '<input type="checkbox" name="statut" id="statut"><br><br>';
-      //   }
-      // }
-      ?>
-      <br>
+      ?>> <br>
       
       <button type="submit" name="update">Mettre à jour</button>
-    </form>
+    </form> -->
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js"></script>

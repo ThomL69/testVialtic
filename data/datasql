@@ -1,10 +1,10 @@
-INSERT INTO transexpressbase VALUES ('Dam', 'Jean-CLaude', '0654183254', 'B', 1, FALSE);
-INSERT INTO transexpressbase VALUES ('Joli', 'Valérie', '0645812354', 'C', 2, TRUE);
-INSERT INTO transexpressbase VALUES ('Harvey', 'Steve', '0745817854', 'CE', 3, FALSE);
-INSERT INTO transexpressbase VALUES ('Leboeuf', 'Franck', '0698751565', 'C', 4, FALSE);
-INSERT INTO transexpressbase VALUES ('Joli', 'Valérie', '0611253648', 'B', 5, TRUE);
-INSERT INTO transexpressbase VALUES ('Beauchard', 'Benjamin', '0645621536', 'CE', 654, TRUE);
-INSERT INTO transexpressbase VALUES ('Button', 'Benjamin', '0645265136', 'C', 545, TRUE);
+INSERT INTO transexpressbase VALUES (1, 'Dam', 'Jean-CLaude', '0654183254', 'B', 1, FALSE);
+INSERT INTO transexpressbase VALUES (2, 'Joli', 'Valérie', '0645812354', 'C', 2, TRUE);
+INSERT INTO transexpressbase VALUES (3, 'Harvey', 'Steve', '0745817854', 'CE', 3, FALSE);
+INSERT INTO transexpressbase VALUES (4, 'Leboeuf', 'Franck', '0698751565', 'C', 4, FALSE);
+INSERT INTO transexpressbase VALUES (5, 'Joli', 'Valérie', '0611253648', 'B', 5, TRUE);
+INSERT INTO transexpressbase VALUES (6, 'Beauchard', 'Benjamin', '0645621536', 'CE', 654, TRUE);
+INSERT INTO transexpressbase VALUES (7, 'Button', 'Benjamin', '0645265136', 'C', 545, TRUE);
 
 
 -- supprimer un element du tableau
